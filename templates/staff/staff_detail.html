@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="col-xs-6">
+        <table>
+            {{ form1.as_table }}
+            {{ form2.as_table }}
+        </table>
+    </div>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-lg-6 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-yellow">
+                <div class="inner">
+                    <p>{{hand_records|length}}条人为变动记录</p>
+                    <p>{{nature_records|length}}条自然变动记录</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-add"></i>
+                </div>
+                <a href="javascript:history.go(-1)" class="small-box-footer">返回之前页面<i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div><!-- ./col -->
+        
+    </div><!-- /.row -->
+    {% if point_records %}
+        <div class="row">
+            <div class="box-header">
+                <h3 class="box-title">贡献变动时间线</h3>
+            </div><!-- /.box-header -->
+            <div class="col-md-12">
+              <!-- The time line -->
+              <ul class="timeline">
+                {% for item in point_records %}
+                    <li class="time-label">
+                      <span class="bg-red">
+                        {{ item.date }}
+                      </span>
+                    </li>
+                    {% for record in item.records %}
+                    <li>
+                         <i class="fa fa-user {% ifequal record.record_type 1 %}bg-red{% else %}{% ifequal record.record_type 2 %}bg-green{% else %}bg-blue{% endifequal %}{% endifequal %} bg-blue"></i>
+                         <div class="timeline-item">
+                            <span class="time"><i class="fa fa-clock-o"></i>{{record.time|date:"H点i分s秒"}}</span>
+                            {% ifequal record.record_type 1 %}
+                                <h3 class="timeline-header">系统自动按照个人贡献增幅做了周期变动</h3>
+                                <div class="timeline-body">{{record.remark}}</div>
+                            {% else %}
+                                <h3 class="timeline-header"><a href="/staff_detail/{{ record.hand_record.creator.id }}">{{record.hand_record.creator}}</a>调整了员工的个人贡献</h3>
+                                <div class="timeline-body">
+                                    <p>变动内容：{{record.hand_record.change_type_verbose}}</p>
+                                    <p>预期变动：{{record.hand_record.expect_change}}</p>
+                                    <p>实际变动：{{record.hand_record.real_change}}</p>
+                                    <p>变动备注：{{record.hand_record.remark}}</p>
+                                </div>
+                                <div class='timeline-footer'>
+                                    <a href='/hand_record_detail/{{record.hand_record.id}}' class="btn btn-primary btn-xs">查看更多</a>
+                                </div>
+                            {% endifequal %}
+
+                    </li>
+                    {% endfor %}                
+                {% endfor %}
+                <li>
+                  <i class="fa fa-clock-o bg-gray"></i>
+                </li>
+              </ul>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    {% endif %}
+    <div class="row">
+        <div class="col-xs-12">
+            {% if hand_records %}
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">人为贡献变动记录</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>创建者</th>
+                                    <th>创建时间</th>
+                                    <th>结算时间</th>
+                                    <th>预计变动内容</th>
+                                    <th>实际变动内容</th>
+                                    <th>备注</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%  for record in hand_records %}
+                                    <tr>
+                                        <td>{{ record.creator }}</td>
+                                        <td>{{ record.create_time }}</td>
+                                        <td>{{ record.finish_time }}</td>
+                                        <td>{{ record.expect_change }}</td>
+                                        <td>{{ record.real_change }}</td>
+                                        <td>{{ record.remark }}</td>
+                                        <td>{{ record.status_verbose }}</td>
+                                        <td>
+                                            <p><a href="/hand_record_detail/{{ record.id }}">查看详情</a></p>
+                                        </td>                          
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>{{ hand_records|length }}条人为记录</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div><!-- /.box-body -->
+                </div><!-- /.box -->
+            {% endif %}
+            {% if nature_records %}
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">自然贡献变动记录</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>描述</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%  for record in nature_records %}
+                                    <tr>
+                                        <td>{{ record.create_time }}</td>
+                                        <td>{{ record.remark }}</td>                         
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>{{ nature_records|length }}条自然记录</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div><!-- /.box-body -->
+                </div><!-- /.box -->
+            {% endif %}
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section>
+{% endblock %}
+
+{% block script %}{% endblock %}

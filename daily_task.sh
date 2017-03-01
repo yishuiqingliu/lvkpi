@@ -1,0 +1,1 @@
+python /home/lv/djcode/lvkpi/django_daily_task.py

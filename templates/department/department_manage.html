@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="col-xs-6">
+        <table>
+            {{ form1.as_table }}
+            {{ form2.as_table }}
+        </table>
+    </div>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-lg-6 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-aqua">
+                <div class="inner">
+                    <p><b>{{children|length}}个子部门</b></p>
+                    {% for child in children %}
+                        <p>{{child}}</p>
+                    {% endfor %}
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="/department_add/{{department.id}}" class="small-box-footer">添加子部门<i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div><!-- ./col -->
+        <div class="col-lg-6 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-yellow">
+                <div class="inner">
+                    <p><b>{{department.positions_set|length}}个岗位</b></p>
+                    {% for position in department.positions_set %}
+                        <p>{{position}}</p>
+                    {% endfor %}
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-add"></i>
+                </div>
+                <a href="/department_edit/{{department.id}}" class="small-box-footer">编辑部门信息<i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div><!-- ./col -->
+    </div><!-- /.row -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">{{title}}</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <table id="example2" class="table table-bordered table-hover">
+                        <thead>
+                          <tr>
+                            <th>部门名</th>
+                            <th>部门简称</th>
+                            <th>部门配置</th>
+                            <th>部门岗位</th>
+                            <th>部门描述</th>
+                            <th>操作</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {%  for department in children %}
+                                <tr>
+                                    <td>{{ department.name }}</td>
+                                    <td>{{ department.short_name }}</td>
+                                    <td>{{ department.departmentset }}</td>
+                                    <td>{{ department.positions_verbose }}</td>
+                                    <td>{{ department.remark }}</td>
+                                    <td>
+                                        <p><a href="/department_detail/{{ department.id }}">查看</a></p>
+                                        <p><a href="/department_edit/{{ department.id }}">修改</a></p>
+                                        <p><a href="/department_manage/{{ department.id }}">子部门管理</a></p>
+                                        <p><a href="/staff_manage/{{ department.id }}">部门成员管理</a></p>
+                                    </td>                          
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                          <tr>
+                            <th>{{ children|length }}个子部门</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                          </tr>
+                        </tfoot>
+                    </table>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section>
+{% endblock %}
+
+{% block script %}{% endblock %}

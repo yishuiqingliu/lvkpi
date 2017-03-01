@@ -1,0 +1,71 @@
+% extends "base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content_title %}
+    {{ title }}
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+    $("form").submit(function() {
+        $(this).submit(function() {
+            return false;
+        });
+        return true;
+    });
+    $(document).ready(function() { 
+            $("#id_holder").select2(
+                {dropdownAutoWidth:true});
+            $("#id_user").select2({dropdownAutoWidth:true,
+                    minimumInputLength: 2,
+                });
+            $("#id_contract").select2({dropdownAutoWidth:true,
+                    minimumInputLength: 2,
+                });
+            $("#id_arriveing_date").on('click',function(){
+                WdatePicker({dateFmt:'yyyy-MM-dd'});
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+    <div class="ui two column middle aligned relaxed grid basic segment"> 
+         <div class="column">
+            <form action="" enctype="multipart/form-data" method="post" style=''>{% csrf_token %}
+                <div class="ui fluid form segment">
+                    <table>
+                        {{ form1.as_table }}
+                        {{ form2.as_table }}
+                        {{ form3.as_table }}
+                        {{ form4.as_table }}
+                    </table>
+                    <input type="submit" value="保存" class="ui blue submit button" >
+                </div>
+            </form>
+        </div>
+        <div class='column'>
+            <div class="ui two column middle aligned relaxed grid basic segment">
+                <div class='column'>
+                    {% if errors %}
+                        {% for error in errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class='column'>
+                    {% if successes %}
+                        {% for success in successes %}
+                            <p>{{ success }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>                
+        </div>
+    </div>
+
+{% endblock %}

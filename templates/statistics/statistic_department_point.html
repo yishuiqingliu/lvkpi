@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}
+<link href="/static/package/select2/select2.css" rel="stylesheet" type="text/css" />
+<style>
+    .select2-choices { 
+        z-index:99;
+    }
+</style>
+{% endblock %}
+
+{% block script_head %}{% endblock %}
+
+{% block content %}
+<section>
+    <form role="form" class="form-horizontal clearfix" id="statisticalTicket">
+      <div class="form-group col-sm-2">
+        <label for="begin_time" class="control-label">开始日期</label>
+        <input type="text" class="form-control form_datetime" value="" name="begin_time" id="begin_time" onClick="WdatePicker({dateFmt:'yyyy-MM-dd ',minDate:'2009-01-01'})">
+      </div>
+      <div class="form-group col-sm-2">
+        <label for="end_time" class="control-label">结束日期</label>
+        <input type="text" class="form-control form_datetime" value="" name="end_time" id="end_time" onClick="WdatePicker({dateFmt:'yyyy-MM-dd ',minDate:'2009-01-01'})">
+      </div>
+      <div class="form-group col-sm-2">
+        <label for="timeLevel" class="control-label">时间粒度</label>
+        <select id="timeLevel" name="timeLevel" class="form-control">
+             <option value="day">天</option>
+             <option value="month">月</option>
+             <option value="year">年</option>
+            </select>
+      </div>
+      <div class="col-sm-2" style="text-align:center;padding-left:0;">
+        <div style="margin-right:15px;margin-top:20px;">
+          <button type="submit" class="button button-caution button-flat btn-block" id="statisticsSearch"  data-loading-text="查询中...." autocomplete="off">搜索</button>
+        </div>
+      </div>
+     </form>
+  </section>
+  <div id="right_ebar" style="height:800px;margin:1em auto;padding-left:15px;">
+  
+  </div>
+</section>
+{% endblock %}
+
+{% block script %}
+  <script  type="text/javascript" src="/static/package/My97DatePicker/lang/zh-cn.js" charset="UTF-8"></script>
+  <script  type="text/javascript" src="/static/package/My97DatePicker/calendar.js" charset="UTF-8"></script>
+  <script  type="text/javascript" src="/static/package/My97DatePicker/WdatePicker.js" charset="UTF-8"></script>
+  <script src="/static/package/select2/select2.js"></script>
+  <script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
+  <script type="text/javascript">
+    (function() {
+      var myChart  = echarts.init(document.getElementById('right_ebar'));
+      var option = null;
+        $.getJSON('/statistics/department_point_api/',function(data){ 
+          option = data;
+          myChart.setOption(option); 
+        });
+        $(window).on('orientationchange',function(event) { 
+          if (myChart && myChart.dispose) {
+              myChart.dispose();
+              myChart = echarts.init(document.getElementById('right_ebar'));
+            window.onresize = myChart.resize;
+          //  (new Function(editor.doc.getValue()))();
+            myChart.setOption(option, true)
+          }
+        })
+        $('#statisticalTicket').submit(function() { 
+          $('#statisticsSearch').button('loading');
+          var url = '/statistics/department_point_api/';
+          var keyIndex = -1;
+          var timeNum;
+          $(this).find('input,select').each(function(index,domEle) { 
+            if($(domEle).val()) { 
+              keyIndex++;
+              if(keyIndex == 0) { 
+              if($(domEle).hasClass('form_datetime')) { 
+                timeNum = new Date($(domEle).val());
+                timeNum = parseInt(timeNum.getTime()/1000);
+                url += '?'+$(domEle).attr('name')+'='+timeNum;
+                } else { 
+                  url += '?'+$(domEle).attr('name')+'='+$(domEle).val();
+                }
+              } else if(keyIndex>0){
+                if($(domEle).hasClass('form_datetime')) { 
+                  timeNum = new Date($(domEle).val());
+                  timeNum = parseInt(timeNum.getTime()/1000);
+                  url += '&'+$(domEle).attr('name')+'='+timeNum; 
+                } else { 
+                  url += '&'+$(domEle).attr('name')+'='+$(domEle).val(); 
+                }
+              }
+            }
+          });
+          $.getJSON(url,function(data){ 
+            var option = data;
+            echarts.init(document.getElementById('right_ebar')).setOption(option);
+            $('#statisticsSearch').button('reset');
+           });
+          return false;
+        });
+        })();
+  </script>
+{% endblock %}

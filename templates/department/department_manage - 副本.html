@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    $(document)
+        .ready(function () {
+            $('.delete.icon').click(function() {
+                location.reload();
+            });
+         });
+</script>
+{% endblock %}
+
+{% block content_title %}
+  {{title}}
+{% endblock %}
+
+{% block content %}
+<div class="ui fluid form segment">
+    <div class="ui fluid form segment">
+        <table>
+            {{ form1.as_table }}
+            {{ form2.as_table }}
+        </table>
+    </div>
+    <div class="ui blue labeled icon button"><a class="item" href="/department_add/{{department.id}}">添加子部门</a><i class="add icon"></i></div>
+    <div class="ui blue labeled icon button"><a class="item" href="/department_add/{{department.id}}">添加职位</a><i class="add icon"></i></div>
+    <form action='' method='post'>
+        {% csrf_token %}
+        {% if need_query %}
+        <div class="ui fluid form segment">
+            <div class="field">
+                <label>员工检索</label>
+                <div class="ui left labeled icon input">
+                    <i class="search icon"></i>
+                    <input type="text" placeholder="" name='q'>
+                </div>
+            </div>         
+            <input type="submit" value="搜索" class="ui blue submit button" />
+        </div>
+        {% endif %}
+    </form>
+    <div class="ui header active title">
+        {{ department.name }}成员列表
+        <i class="dropdown icon"></i>
+    </div>
+    <div class="active content">
+        <table class="ui sortable table segment">
+            <thead>
+            <tr>
+                <th>部门名</th>
+                <th>部门简称</th>
+                <th>部门配置</th>
+                <th>部门岗位</th>
+                <th>部门描述</th>
+                <th>操作</th>
+            </tr></thead>
+            <tbody>
+                {%  for department in children %}
+                <tr>
+                    <td>{{ department.name }}</td>
+                    <td>{{ department.short_name }}</td>
+                    <td>{{ department.departmentset }}</td>
+                    <td>{{ department.positions_verbose }}</td>
+                    <td>{{ department.remark }}</td>
+                    <td>
+                        <p><a target="_blank" href="/department_detail/{{ department.id }}">查看</a></p>
+                        <p><a href="/department_edit/{{ department.id }}">修改</a></p>
+                        <p><a href="/department_manage/{{ department.id }}">子部门管理</a></p>
+                        <p><a href="/staff_manage/{{ department.id }}">部门成员管理</a></p>
+                    </td>                          
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+            <tr>
+                <th>{{ children|length }}个子部门</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr></tfoot>
+        </table>
+    </div>
+    <div class="ui horizontal divider">您还可以</div>      
+    <div class="ui accordion" style="width: 100%">
+        <div class="ui header title">
+            录入新的子部门信息
+            <i class="dropdown icon"></i>
+        </div>
+        <div class="content">
+            <form action="" method="post" enctype="multipart/form-data" style=''>{% csrf_token %}
+                <div class="ui fluid form segment">
+                    <table>
+                        {{ form.as_table }}
+                        <tr>
+                            <th><label for="id_accountneed">是否为该成员创建账号:</label></th>
+                            <td><input type="checkbox" id="id_accountneed" name="accountneed"></td>
+                        </tr>
+                    </table>
+                    <input type="submit" value="保存" class="ui blue submit button" >
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
